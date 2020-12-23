@@ -7,8 +7,7 @@ let counter = 1;
 
 let box = {
   borderRadius: 5,
-  width: 50,
-  lineHeight: 0
+  width: 50
 };
 
 let container = {
