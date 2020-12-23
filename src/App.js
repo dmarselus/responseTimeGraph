@@ -21,16 +21,13 @@ export default function App() {
   const [timeArray, setTimeArray] = useState([]);
   const [liveUpdate, setLiveUpdate] = useState(true);
 
-  // useEffect(() => {
-  //   if (runnable) setInterval(() => getFetchTime(), 5000);
-  // }, []);
-
   useEffect(() => {
-    handle = setInterval(getFetchTime, 5000);
-
-    return () => {
-      clearInterval(handle);
-    };
+    if (liveUpdate) {
+      handle = setInterval(getFetchTime, 5000);
+      return () => {
+        clearInterval(handle);
+      };
+    }
   });
 
   /*
@@ -95,6 +92,12 @@ export default function App() {
     );
   }
 
+  /*
+    toggleLive
+    params: none
+    def: either clear or setInterval to handle based on liveUpdate state, then toggle liveUpdate
+    return: void
+   */
   function toggleLive() {
     setLiveUpdate(!liveUpdate);
     if (liveUpdate) clearInterval(handle);
@@ -127,6 +130,7 @@ export default function App() {
       <button onClick={toggleLive}>
         {liveUpdate ? "Stop Live" : "Go Live"}
       </button>
+
       {renderGraph()}
     </div>
   );
