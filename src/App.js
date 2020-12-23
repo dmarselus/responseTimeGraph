@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const url = "https://api.jobtread.com/healthz";
 
+let handle;
 let arr = [];
 let counter = 1;
 
@@ -18,6 +19,19 @@ let container = {
 };
 export default function App() {
   const [timeArray, setTimeArray] = useState([]);
+  const [liveUpdate, setLiveUpdate] = useState(true);
+
+  // useEffect(() => {
+  //   if (runnable) setInterval(() => getFetchTime(), 5000);
+  // }, []);
+
+  useEffect(() => {
+    handle = setInterval(getFetchTime, 5000);
+
+    return () => {
+      clearInterval(handle);
+    };
+  });
 
   /*
     getFetchTime
@@ -26,8 +40,8 @@ export default function App() {
     return: void
   */
   function getFetchTime() {
-    let tempTime = [...timeArray];
     let start = Date.now();
+    let tempTime = [...timeArray];
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
@@ -81,6 +95,12 @@ export default function App() {
     );
   }
 
+  function toggleLive() {
+    setLiveUpdate(!liveUpdate);
+    if (liveUpdate) clearInterval(handle);
+    else handle = setInterval(getFetchTime, 5000);
+  }
+
   /*
     reset
     params: none
@@ -95,9 +115,18 @@ export default function App() {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <button onClick={getFetchTime}>Single Fetch</button>
-      <button onClick={getTenFetchesTime}>Auto Fetch (10)</button>
+      <button disabled={liveUpdate} onClick={getFetchTime}>
+        Single Fetch
+      </button>
+
+      <button disabled={liveUpdate} onClick={getTenFetchesTime}>
+        Auto Fetch (10)
+      </button>
+
       <button onClick={reset}>Reset</button>
+      <button onClick={toggleLive}>
+        {liveUpdate ? "Stop Live" : "Go Live"}
+      </button>
       {renderGraph()}
     </div>
   );
