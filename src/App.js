@@ -116,11 +116,11 @@ export default function App() {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <button disabled={liveUpdate} onClick={getFetchTime}>
+      <button disabled={false} onClick={getFetchTime}>
         Single Fetch
       </button>
 
-      <button disabled={liveUpdate} onClick={getTenFetchesTime}>
+      <button disabled={false} onClick={getTenFetchesTime}>
         Auto Fetch (10)
       </button>
 
