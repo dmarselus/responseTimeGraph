@@ -22,12 +22,10 @@ export default function App() {
   const [liveUpdate, setLiveUpdate] = useState(true);
 
   useEffect(() => {
-    if (liveUpdate) {
-      handle = setInterval(getFetchTime, 5000);
-      return () => {
-        clearInterval(handle);
-      };
-    }
+    handle = setInterval(getFetchTime, 5000);
+    return () => {
+      clearInterval(handle);
+    };
   });
 
   /*
@@ -99,9 +97,9 @@ export default function App() {
     return: void
    */
   function toggleLive() {
-    setLiveUpdate(!liveUpdate);
     if (liveUpdate) clearInterval(handle);
     else handle = setInterval(getFetchTime, 5000);
+    setLiveUpdate(!liveUpdate);
   }
 
   /*
@@ -127,7 +125,7 @@ export default function App() {
       </button>
 
       <button onClick={reset}>Reset</button>
-      <button onClick={toggleLive}>
+      <button disabled={true} onClick={toggleLive}>
         {liveUpdate ? "Stop Live" : "Go Live"}
       </button>
 
