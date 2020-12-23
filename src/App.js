@@ -3,15 +3,16 @@ import React, { useState } from "react";
 const url = "https://api.jobtread.com/healthz";
 
 let arr = [];
-let i = 1;
+let counter = 1;
 
 let box = {
-  backgroundColor: "grey",
+  borderRadius: 5,
   width: 50,
-  margin: 10
+  lineHeight: 0
 };
 
 let container = {
+  margin: 10,
   display: "flex",
   flexDirection: "column",
   justifyContent: "flex-end"
@@ -19,19 +20,31 @@ let container = {
 export default function App() {
   const [timeArray, setTimeArray] = useState([]);
 
+  /*
+    getFetchTime
+    params: none
+    def: get a single response time, and push into timeArray
+    return: void
+  */
   function getFetchTime() {
     let tempTime = [...timeArray];
     let start = Date.now();
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
-        let end = Date.now();
-        tempTime.push(end - start);
+        tempTime.push({ type: "Manual", time: Date.now() - start });
         setTimeArray(tempTime);
       });
   }
 
-  function getTenFetchesTime(callAgain = i < 10) {
+  /*
+    getTenFetchesTime
+    params: callAgain - boolean
+    def: get 10 responses time recursively, and write it into temporary
+          array, after its finished then set the timeArray
+    return: void
+   */
+  function getTenFetchesTime(callAgain = counter < 10) {
     if (!callAgain) {
       setTimeArray([...timeArray, ...arr]);
     }
@@ -39,28 +52,45 @@ export default function App() {
     fetch(url)
       .then((res) => res.json())
       .then(() => {
-        i++;
-        arr.push(Date.now() - start);
-        if (callAgain) getTenFetchesTime(i < 10);
+        counter++;
+        arr.push({ type: "Auto", time: Date.now() - start });
+        if (callAgain) getTenFetchesTime(counter < 10);
       });
   }
 
+  /*
+    renderGraph
+    params: none
+    def: iterate through timeArray then draw the graph
+    return: JSX
+   */
   function renderGraph() {
     return (
       <div style={{ display: "flex", flexWrap: "wrap" }}>
-        {timeArray.map((height) => (
-          <div style={container}>
-            <div style={{ ...box, height }} />
-            <p>{height + " ms"}</p>
-          </div>
-        ))}
+        {timeArray.map(({ type, time }, index) => {
+          let backgroundColor =
+            time <= 50 ? "green" : time <= 60 ? "orange" : "red";
+          return (
+            <div key={index} style={container}>
+              <div style={{ ...box, height: time, backgroundColor }} />
+              <span>{type}</span>
+              <span>{time + " ms"}</span>
+            </div>
+          );
+        })}
       </div>
     );
   }
 
+  /*
+    reset
+    params: none
+    def: resetting all the variables
+    return: void
+   */
   function reset() {
     setTimeArray([]);
-    i = 1;
+    counter = 1;
     arr = [];
   }
 
